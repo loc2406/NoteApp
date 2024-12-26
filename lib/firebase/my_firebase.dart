@@ -2,7 +2,7 @@ import '../models/note.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MyFirebase {
-  Future<List<Note>> getNotes() async {
+  static Future<List<Note>> getNotes() async {
     final List<Note> result = [];
 
     await FirebaseFirestore.instance
@@ -19,7 +19,7 @@ class MyFirebase {
     return result;
   }
 
-  Future<void> addNote(Note note) async {
+  static Future<void> addNote(Note note) async {
     await FirebaseFirestore.instance
         .collection('notes')
         .doc(note.title)
