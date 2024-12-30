@@ -63,7 +63,7 @@ class MyCommon {
     );
   }
 
-  static Widget getCustomProgressDialog() {
+  static Widget getCustomProgressDialog(String title) {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -72,12 +72,12 @@ class MyCommon {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Column(
+        child:  Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(color: mainColor),
             SizedBox(height: 15),
-            Text('Adding new note...', style: TextStyle(fontSize: 18)),
+            Text(title, style: TextStyle(fontSize: 18)),
           ],
         ),
       ),

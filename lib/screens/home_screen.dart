@@ -1,6 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:note_app/screens/add_note_screen.dart';
+import 'package:note_app/screens/note_info_screen.dart';
 import 'package:note_app/utils/my_common.dart';
 
 import '../firebase/my_firebase.dart';
@@ -100,28 +102,116 @@ class _HomeScreenState extends State<HomeScreen> {
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10),
           itemCount: notes.length,
-          itemBuilder: (context, index) => Container(
-            decoration: const BoxDecoration(border: MyCommon.itemGridBorder, borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(notes[index].description ),
-                    Column(
-                      children: [
-                        Text(notes[index].title),
-                        Text(notes[index].createdDate),
-                      ],
-                    )
-                  ],
+          itemBuilder: (context, index) => GestureDetector(
+                onLongPress: () => handleItemGridLongPress(notes[index]),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: colorFromHex(notes[index].color),
+                      border: MyCommon.itemGridBorder,
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(notes[index].description,  style: TextStyle(
+                          color: colorFromHex(notes[index].color) ==
+                              Colors.black
+                              ? Colors.white
+                              : Colors.black,
+                          fontWeight: FontWeight.bold)),
+                      Column(
+                        children: [
+                          Text(
+                            notes[index].title,
+                            style: TextStyle(
+                                color: colorFromHex(notes[index].color) ==
+                                        Colors.black
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(notes[index].createdDate,
+                              style: TextStyle(
+                                  color: colorFromHex(notes[index].color) ==
+                                          Colors.black
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-          )),
+              )),
     );
   }
 
   Future<void> handleAddNote() async {
-    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const AddNoteScreen()));
+    final result = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const AddNoteScreen()));
     if (result.toString() == 'isAdded') {
       await fetchNotes();
+    }
+  }
+
+  void handleItemGridLongPress(Note note) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(
+              height: 10,
+            ),
+            Text('${note.title}'),
+            const SizedBox(
+              height: 10,
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.pop(context);
+                handleEditNote(note);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('Delete'),
+              onTap: () async {
+                Navigator.pop(context);
+                await handleDeleteNote(note.title);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> handleEditNote(Note note) async {
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (contex) => const NoteInfoScreen(), settings: RouteSettings(arguments: {
+      'allowEdit': true,
+      'note': note,
+    })));
+
+    if (result.toString() == 'isEdited') fetchNotes();
+  }
+
+  Future<void> handleDeleteNote(String noteTitle) async {
+    final isRemoved = await MyFirebase.deleteNote(noteTitle);
+
+    if (mounted) {
+      if (isRemoved) {
+        ScaffoldMessenger.of(this.context).showSnackBar(
+            const SnackBar(content: Text('Remove successful')));
+        fetchNotes();
+      } else {
+        ScaffoldMessenger.of(this.context).showSnackBar(
+            const SnackBar(content: Text('Remove failed')));
+      }
     }
   }
 }

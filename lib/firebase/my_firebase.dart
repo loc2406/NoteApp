@@ -25,4 +25,28 @@ class MyFirebase {
         .doc(note.title)
         .set(note.toMap());
   }
+
+  static Future<bool> editNote(Map<String, dynamic> map) async {
+    try{
+      await FirebaseFirestore.instance
+          .collection('notes')
+          .doc(map['title'])
+          .set(map);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  static Future<bool> deleteNote(String noteTittle) async {
+    try{
+      await FirebaseFirestore.instance
+          .collection('notes')
+          .doc(noteTittle)
+          .delete();
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
 }
