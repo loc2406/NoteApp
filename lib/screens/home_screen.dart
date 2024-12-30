@@ -1,7 +1,10 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:note_app/screens/add_note_screen.dart';
 import 'package:note_app/utils/my_common.dart';
 
 import '../firebase/my_firebase.dart';
+import '../main.dart';
 import '../models/note.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -102,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(notes[index].content),
+                    Text(notes[index].description ),
                     Column(
                       children: [
                         Text(notes[index].title),
@@ -116,24 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> handleAddNote() async {
-    // await MyFirebase.addNote(Note(
-    //   title: 'Note 1',
-    //   content: 'Content 1',
-    //   img: '',
-    //   createdDate: '01/01/2025',
-    //   color: '',
-    //   type: '',
-    // ));
-    // await MyFirebase.addNote(Note(
-    //   title: 'Note 2',
-    //   content: 'Content 2',
-    //   img: '',
-    //   createdDate: '01/01/2025',
-    //   color: '',
-    //   type: '',
-    // ));
-    // await fetchNotes();
-
-    showDialog(context: context, builder:(context) => MyCommon.getSelectNoteTypesDialog((){}));
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const AddNoteScreen()));
+    if (result.toString() == 'isAdded') {
+      await fetchNotes();
+    }
   }
 }

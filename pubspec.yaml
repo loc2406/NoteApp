@@ -35,6 +35,17 @@ dependencies:
   firebase_cloud_firestore: ^5.4.4
   provider: ^6.1.2
   firebase_ui_auth: ^1.16.0
+  image_picker: ^1.1.2
+  dotted_border: ^2.1.0
+  cloudinary: ^1.2.0
+  flutter_colorpicker: ^1.1.0
+  dropdown_button2: ^2.3.9
+  # Awesome plugins for local notifications
+  awesome_notifications_core: ^0.10.0 # use the latest core version available
+  awesome_notifications: ^0.10.0 # This version is managed by core plugin
+
+  # Awesome plugins for remote push notifications
+  awesome_notifications_fcm: ^0.10.0 # This version is managed by core plugin
 
 
   # The following adds the Cupertino Icons font to your application.
